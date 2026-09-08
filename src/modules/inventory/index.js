@@ -8,6 +8,8 @@ export default class InventoryModule {
   // descriptorn berättar vilka fält GenericForm ska bygga
   static descriptor = {
     name: "Lagerhantering",
+    // inventoryrapporten kan visas direkt när admin öppnas
+    runOnLoad: true,
     methodsAndInputs: [
       {
         method: "run",

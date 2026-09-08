@@ -1,8 +1,10 @@
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import GenericForm from "./GenericForm";
 import GenericResult from "./GenericResult";
 
-export default function ModuleRunner({ moduleClass: ModuleClass, context = {} }) {
+const emptyContext = {};
+
+export default function ModuleRunner({ moduleClass: ModuleClass, context = emptyContext }) {
   // samma modulinstans behålls mellan komponentens renderingar
   const moduleInstance = useRef(null);
   if (moduleInstance.current === null) {
@@ -13,8 +15,7 @@ export default function ModuleRunner({ moduleClass: ModuleClass, context = {} })
   const [error, setError] = useState(null);
   const [result, setResult] = useState(undefined);
 
-  // descriptor → formulär → run → resultat
-  async function handleSubmit(values) {
+  const runModule = useCallback(async values => {
     setLoading(true);
     setError(null);
 
@@ -26,6 +27,18 @@ export default function ModuleRunner({ moduleClass: ModuleClass, context = {} })
     } finally {
       setLoading(false);
     }
+  }, [context]);
+
+  // bara moduler som ber om det körs direkt vid sidladdning
+  useEffect(() => {
+    if (ModuleClass.descriptor.runOnLoad) {
+      runModule({});
+    }
+  }, [ModuleClass, runModule]);
+
+  // descriptor → formulär → run → resultat
+  async function handleSubmit(values) {
+    await runModule(values);
   }
 
   return (

@@ -26,7 +26,9 @@ export default function GenericResult({ result, columns }) {
                 <td key={column.key}>
                   {column.render
                     ? column.render(row)
-                    : row[column.key]}
+                    : typeof row[column.key] === "boolean"
+                      ? String(row[column.key])
+                      : row[column.key]}
                 </td>
               ))}
             </tr>

@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import StockItem from "../StockItem.js";
 import StockMovement from "../StockMovement.js";
 import InventoryService from "../InventoryService.js";
+import InventoryModule from "../index.js";
 
 import {
   InvalidStockMovementError
@@ -163,4 +164,59 @@ test("försäljningstakt kan höja beställningspunkten", () => {
     item.getEffectiveReorderPoint(7),
     14
   );
+});
+
+
+test("InventoryModule har ett publikt run-kontrakt", () => {
+  const module = new InventoryModule();
+  const runDefinition = InventoryModule.descriptor.methodsAndInputs.find(
+    definition => definition.method === "run"
+  );
+
+  assert.ok(module);
+  assert.ok(InventoryModule.descriptor);
+  assert.equal(runDefinition.input.length, 3);
+});
+
+
+test("InventoryModule visar rapport och gör quantity till Number", async () => {
+  const originalFetch = globalThis.fetch;
+  const postBodies = [];
+
+  globalThis.fetch = async (url, options = {}) => {
+    if (url === "/api/inventory" && options.method === "POST") {
+      postBodies.push(JSON.parse(options.body));
+      return {
+        ok: true,
+        json: async () => ({
+          productId: "1",
+          type: "delivery",
+          quantity: 4,
+          timestamp: "2026-09-08T00:00:00.000Z"
+        })
+      };
+    }
+
+    return {
+      ok: true,
+      json: async () => []
+    };
+  };
+
+  try {
+    const module = new InventoryModule();
+    const products = [{ id: "1", name: "Test", reorderPoint: 3 }];
+    const initialReport = await module.run({}, { products });
+    const updatedReport = await module.run(
+      { productId: "1", type: "delivery", quantity: "4" },
+      { products }
+    );
+
+    assert.equal(initialReport[0].stock, 0);
+    assert.equal(updatedReport[0].stock, 4);
+    assert.equal(postBodies[0].quantity, 4);
+    assert.equal(typeof postBodies[0].quantity, "number");
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
