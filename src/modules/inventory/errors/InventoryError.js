@@ -1,3 +1,5 @@
+// Den här filen samlar felklasser som används av lagermodulen.
+
 // Grundfel för lagerdelen.
 //Alla våra egna lagerfel bygger vidare på den här.
 export class InventoryError extends Error {

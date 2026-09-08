@@ -1,3 +1,6 @@
+// Den här filen representerar en lagerhändelse.
+// En händelse kan vara inleverans, försäljning eller justering.
+
 import { InvalidStockMovementError } from "./errors/InventoryError.js";
 
 export default class StockMovement {

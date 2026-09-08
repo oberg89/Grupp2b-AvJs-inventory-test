@@ -1,3 +1,6 @@
+// Den här filen är lagermodulens publika ingång.
+// Den kopplar modulens descriptor och run-metod till InventoryService.
+
 import InventoryService from "./InventoryService.js";
 import {
   InventoryApiError,

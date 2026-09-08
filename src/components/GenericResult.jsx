@@ -1,3 +1,6 @@
+// Den här filen visar resultat från moduler på ett generellt sätt.
+// Objekt visas som nyckel-värde och listor som tabeller.
+
 export default function GenericResult({ result, columns }) {
   if (Array.isArray(result)) {
     // tom array betyder att det inte finns något resultat att visa

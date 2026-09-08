@@ -1,3 +1,6 @@
+// Den här filen beskriver lagerinformationen för en produkt.
+// Den räknar ut beställningspunkt och låg lagernivå.
+
 import { InventoryError } from "./errors/InventoryError.js";
 
 export default class StockItem {

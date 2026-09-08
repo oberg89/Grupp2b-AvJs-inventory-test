@@ -1,3 +1,6 @@
+// Den här filen kopplar ihop modulens descriptor, formulär och resultat.
+// Den kör kompatibla moduler utan module-specifik React-kod.
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import GenericForm from "./GenericForm";
 import GenericResult from "./GenericResult";

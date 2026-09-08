@@ -1,3 +1,5 @@
+// Den här sidan hittar kompatibla moduler och visar deras generiska gränssnitt.
+
 import ModuleRunner from "../components/ModuleRunner";
 
 // hittar alla modul-ingångar automatiskt

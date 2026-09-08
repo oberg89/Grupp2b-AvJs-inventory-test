@@ -1,3 +1,6 @@
+// Den här filen hämtar lagerhändelser och bygger lagerrapporter.
+// Själva lagerberäkningen samlas i InventoryService.
+
 import StockItem from "./StockItem.js";
 import StockMovement from "./StockMovement.js";
 

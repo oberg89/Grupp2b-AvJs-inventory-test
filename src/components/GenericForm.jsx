@@ -1,4 +1,7 @@
 
+// Den här filen bygger formulär från en modul-descriptor.
+// Samma komponent kan därför användas av alla moduler.
+
 import { useState } from "react";
 
 function validateField(field, value) {

@@ -1,3 +1,5 @@
+// Den här filen testar lagerhändelser, lagerberäkningar och modulens kontrakt.
+
 import test from "node:test";
 import assert from "node:assert/strict";
 
