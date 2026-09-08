@@ -1,75 +1,42 @@
-import { useState, useEffect } from "react";
+import ModuleRunner from "../components/ModuleRunner";
 
+// hittar alla modul-ingångar automatiskt
+const moduleFiles = import.meta.glob("../modules/*/index.js", {
+    eager: true
+});
+
+const discoveredModules = Object.entries(moduleFiles).flatMap(([path, moduleFile]) => {
+    const ModuleClass = moduleFile.default;
+
+    if (typeof ModuleClass !== "function" || !ModuleClass.descriptor) {
+        return [];
+    }
+
+    try {
+        const testInstance = new ModuleClass();
+        if (typeof testInstance.run !== "function") {
+            return [];
+        }
+
+        return [{ key: path, moduleClass: ModuleClass }];
+    } catch {
+        // ofärdiga moduler hoppas över så att sidan fortfarande fungerar
+        return [];
+    }
+});
 
 export default function Admin() {
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    async function getProducts() {
-        try {
-            const response = await fetch("/api/products");
-
-            if (!response.ok) {
-                throw new Error("Kunde inte hämta lagersaldot");
-            
-            }
-
-            const data = await response.json();
-            setProducts(data);
-        } catch (error) {
-            setError(error.message);
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    useEffect(() => {
-        getProducts();
-    }, []);
-
-    if (loading) {
-        return <p>Hämtar lagersaldo...</p>;
-    }
-
-    if (error) {
-        return <p>Fel: {error}</p>;
-    }
-
     return (
         <>
             <h1>Butiksadmin</h1>
-
-            <section>
-                <h2>Lagerstatus</h2>
-                <p>Här visas lagersaldo och varningar för produkter
-                    med låg lagernivå.</p>
-
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Produkt</th>
-                                <th>Lagersaldo</th>
-                                <th>Beställningspunkt</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {products.map((product) => (
-                                <tr key={product.id}>
-                                    <td>{product.name}</td>
-                                    <td>{product.stock}</td>
-                                    <td>{product.reorderPoint}</td>
-                                    <td>
-                                        {product.stock <= 5 
-                                        ? "Lågt lager"
-                                        : "OK" }
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-            </section>
+            {discoveredModules.map(({ key, moduleClass }) => (
+                <section key={key}>
+                    <ModuleRunner moduleClass={moduleClass} />
+                </section>
+            ))}
+            {discoveredModules.length === 0 && (
+                <p>Inga kompatibla moduler hittades.</p>
+            )}
         </>
     );
 }
